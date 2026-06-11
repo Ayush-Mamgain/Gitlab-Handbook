@@ -106,7 +106,7 @@ _indexing_state: dict = {
 class SearchRequest(BaseModel):
     """Body for POST /search."""
     query: str
-    top_k: int = 10     # Number of final results to return (max RERANKER_TOP_N)
+    top_k: int = 5     # Number of final results to return (max RERANKER_TOP_N)
 
 
 class ChunkMetadata(BaseModel):

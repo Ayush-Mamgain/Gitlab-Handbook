@@ -77,7 +77,7 @@ CHUNK_OVERLAP_TOKENS: int = 50
 # ─── Retrieval ───────────────────────────────────────────────────────────────
 
 # Number of chunks fetched from Pinecone.
-VECTOR_SEARCH_TOP_K: int = 10
+VECTOR_SEARCH_TOP_K: int = 5
 
 
 # ─── HTTP / networking ───────────────────────────────────────────────────────
