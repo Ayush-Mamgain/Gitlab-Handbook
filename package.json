@@ -1,0 +1,12 @@
+{
+  "name": "gitlab-handbook-chatbot",
+  "private": true,
+  "scripts": {
+    "frontend": "cd chatbot && npm run dev",
+    "backend": "cd rag && .venv\\Scripts\\python.exe -m uvicorn main:app --host 0.0.0.0 --port 8000",
+    "dev": "concurrently \"npm run backend\" \"npm run frontend\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0"
+  }
+}

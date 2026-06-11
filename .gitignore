@@ -1,0 +1,26 @@
+# Root node modules
+/node_modules
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Environment files anywhere
+**/.env
+
+# Python caches anywhere
+**/__pycache__/
+
+# Virtual environments anywhere
+**/.venv/
+**/venv/
+
+# Build artifacts
+**/dist/

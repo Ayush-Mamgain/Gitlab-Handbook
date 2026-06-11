@@ -1,0 +1,28 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# GitLab Handbook RAG Microservice — Python dependencies
+# ─────────────────────────────────────────────────────────────────────────────
+#
+# Install with:
+#   pip install -r requirements.txt
+#
+# GPU users: replace the torch line with the CUDA wheel from
+#   https://pytorch.org/get-started/locally/
+# e.g.:
+#   pip install torch --index-url https://download.pytorch.org/whl/cu121
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Web framework + ASGI server
+fastapi>=0.110.0
+uvicorn[standard]>=0.27.0
+
+# Pinecone vector database (SDK v3+)
+pinecone>=3.0.0
+
+# Embedding model + reranker (includes transformers, tokenizers, torch)
+sentence-transformers>=2.7.0
+
+# HTTP client for the GitLab API
+requests>=2.31.0
+
+# .env file support
+python-dotenv>=1.0.0
