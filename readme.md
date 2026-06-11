@@ -109,7 +109,7 @@ GITLAB_API_TOKEN=
 ### Clone Repository
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/Ayush-Mamgain/Gitlab-Handbook
 cd GITLAB-HANDBOOK
 ```
 
