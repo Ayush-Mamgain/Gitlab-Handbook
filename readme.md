@@ -1,11 +1,8 @@
 # GitLab Handbook Chatbot
 
-GitLab Handbook Chatbot is a Retrieval-Augmented Generation (RAG) conversational AI that indexes GitLab Handbook documents into Pinecone and answers user questions using Google Gemini models.
+A Retrieval-Augmented Generation (RAG) conversational AI that indexes GitLab Handbook documents and Direction pages into Pinecone and answers user questions using Google Gemini models.
 
-The project consists of:
-
-- A **Next.js + TypeScript application** responsible for the chatbot UI, authentication, conversation management, MongoDB integration, and Gemini interactions.
-- A **FastAPI + Python RAG service** responsible for document ingestion, embedding generation, vector storage, and retrieval.
+🔗 **Live Demo:** [gitlab-handbook-chatbot-eight.vercel.app](https://gitlab-handbook-chatbot-eight.vercel.app/)
 
 ---
 
@@ -52,9 +49,7 @@ GITLAB-HANDBOOK/
 
 ### Next.js Application
 
-- Next.js
-- React
-- TypeScript
+- Next.js, React, TypeScript
 - Redux Toolkit
 - MongoDB Atlas
 - JWT Authentication
@@ -62,20 +57,19 @@ GITLAB-HANDBOOK/
 
 ### RAG Service
 
-- FastAPI
-- Python
+- FastAPI, Python
 - Pinecone
-- Sentence Transformers
-- BAAI/bge-base-en-v1.5
+- Sentence Transformers (BAAI/bge-base-en-v1.5)
 
 ---
 
 ## Prerequisites
 
-- Node.js v26+
+- Node.js v22+
 - Python 3.13+
-- MongoDB Atlas
-- Google Gemini API Key
+- MongoDB Atlas account
+- Google Gemini API Key ([Get one from Google AI Studio](https://aistudio.google.com/))
+- Pinecone account ([pinecone.io](https://www.pinecone.io/))
 
 ---
 
@@ -84,67 +78,76 @@ GITLAB-HANDBOOK/
 ### `chatbot/.env.local`
 
 ```env
-MONGODB_URI=
-JWT_SECRET=
-GEMINI_API_KEY=
+MONGODB_URI=        # Non-SRV MongoDB Atlas connection string (see Troubleshooting)
+JWT_SECRET=         # Any secret string of your choice
+GEMINI_API_KEY=     # From Google AI Studio
 RAG_SERVICE_URL=https://gitlab-handbook-rag-production.up.railway.app/
 ```
 
-### `rag/.env` (Optional)
-
-Only required if running the RAG service fully locally.
+### `rag/.env`
 
 ```env
-PINECONE_API_KEY=
-PINECONE_INDEX_NAME=
+PINECONE_API_KEY=       # From your Pinecone dashboard
+PINECONE_INDEX_NAME=    # Any index name of your choice
 PINECONE_CLOUD=aws
 PINECONE_REGION=us-east-1
-GITLAB_API_TOKEN=
+GITLAB_API_TOKEN=       # Optional — prevents GitLab API rate limiting
 ```
 
 ---
 
 ## Installation
 
-### Clone Repository
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/Ayush-Mamgain/Gitlab-Handbook
 cd GITLAB-HANDBOOK
 ```
 
-### Install Root Dependencies
+### 2. Install Node Dependencies
 
 ```bash
+# Root dependencies
 npm install
+
+# Chatbot dependencies
+cd chatbot && npm install && cd ..
 ```
 
-### Install Chatbot Dependencies
-
-```bash
-cd chatbot
-npm install
-cd ..
-```
-
-### Setup Python Environment (Optional)
-
-Only required if running the RAG service locally.
+### 3. Set Up Python Environment
 
 ```bash
 cd rag
-
 python -m venv .venv
+```
+
+Activate the virtual environment:
+
+```bash
+# macOS / Linux
+source .venv/bin/activate
 
 # Windows
 .venv\Scripts\activate
+```
 
+Then install dependencies:
+
+```bash
 pip install -r requirements.txt
+cd ..
 ```
 
 ---
 
 ## Running the Project
+
+There are two ways to run the project depending on whether you want to use the deployed RAG service or build your own Pinecone cloud vector database.
+
+### Option A — Use the Deployed RAG Service (Recommended)
+
+This is the quickest way to get started. The `RAG_SERVICE_URL` in `chatbot/.env.local` already points to the deployed service that I created.
 
 Start both services from the root directory:
 
@@ -154,41 +157,55 @@ npm run dev
 
 Available at:
 
-```text
+```
 Frontend: http://localhost:3000
 Backend:  http://localhost:8000
 ```
 
-By default, the chatbot uses the deployed RAG service configured in:
-
-```env
-RAG_SERVICE_URL=
-```
-
 ---
 
-## Running the Complete RAG Pipeline Locally
+### Option B — Run the Full RAG Pipeline Locally
 
-If you want to build your own vector database locally:
+Use this if you want to build and manage your own Pinecone vector database in the cloud.
 
-1. Configure `rag/.env`
-2. Start the project
+**1.** Update `chatbot/.env.local` to point to your local RAG service:
+
+```env
+RAG_SERVICE_URL=http://localhost:8000
+```
+
+**2.** Start both services:
 
 ```bash
 npm run dev
 ```
 
-3. Trigger ingestion
+**3.** Trigger document ingestion:
 
 ```http
-GET http://localhost:8000/update
+POST http://localhost:8000/update
 ```
 
-### Notes
+**4.** Monitor ingestion progress:
 
-- The ingestion process downloads GitLab Handbook documents, generates embeddings, and uploads vectors to Pinecone.
-- Initial ingestion takes approximately **2 hours**.
-- The embedding model (`BAAI/bge-base-en-v1.5`) is downloaded automatically on first startup and may take **5–10 minutes** depending on internet speed.
+```http
+GET http://localhost:8000/status
+```
+
+> **Note:** The ingestion process downloads GitLab Handbook documents, generates embeddings, and uploads vectors to Pinecone. Initial ingestion takes approximately **4-5 hours**.
+>
+> The embedding model (`BAAI/bge-base-en-v1.5`) is downloaded automatically on first startup and may take **5–10 minutes** depending on your internet speed.
+
+Once ingestion completes, the chatbot will use your local vector database for all queries.
+
+---
+
+## API Endpoints (RAG Service)
+
+| Method | Endpoint  | Description                          |
+|--------|-----------|--------------------------------------|
+| POST   | `/update` | Trigger document ingestion           |
+| GET    | `/status` | Check ingestion progress             |
 
 ---
 
@@ -196,33 +213,21 @@ GET http://localhost:8000/update
 
 ### MongoDB Connection Issues
 
-Verify:
+Ensure `MONGODB_URI` is a **non-SRV** connection string in this format:
 
-```env
-MONGODB_URI=
+```
+mongodb://<username>:<password>@ac-xxxx-shard-00-00.xxxxx.mongodb.net:27017,ac-xxxx-shard-00-01.xxxxx.mongodb.net:27017,ac-xxxx-shard-00-02.xxxxx.mongodb.net:27017/?ssl=true&replicaSet=atlas-xxxxx-shard-0&authSource=admin&appName=<app-name>
 ```
 
-contains a valid MongoDB Atlas connection string.
+SRV-format URIs (`mongodb+srv://...`) are not supported.
 
-### Gemini Errors
+### Gemini API Errors
 
-Verify:
-
-```env
-GEMINI_API_KEY=
-```
-
-contains a valid API key.
+Verify that `GEMINI_API_KEY` in `chatbot/.env.local` contains a valid key from [Google AI Studio](https://aistudio.google.com/).
 
 ### RAG Service Errors
 
-Verify:
-
-```env
-RAG_SERVICE_URL=
-```
-
-points to a reachable RAG service.
+Verify that `RAG_SERVICE_URL` points to a reachable RAG service. If running locally, confirm the backend is running at `http://localhost:8000` and check `/status` for diagnostics.
 
 ---
 
