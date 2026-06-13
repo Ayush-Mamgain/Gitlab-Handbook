@@ -112,7 +112,9 @@ cd GITLAB-HANDBOOK
 npm install
 
 # Chatbot dependencies
-cd chatbot && npm install && cd ..
+cd chatbot
+npm install
+cd ..
 ```
 
 ### 3. Set Up Python Environment
