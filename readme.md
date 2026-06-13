@@ -73,28 +73,6 @@ GITLAB-HANDBOOK/
 
 ---
 
-## Environment Variables
-
-### `chatbot/.env.local`
-
-```env
-MONGODB_URI=        # Non-SRV MongoDB Atlas connection string (see Troubleshooting)
-JWT_SECRET=         # Any secret string of your choice
-GEMINI_API_KEY=     # From Google AI Studio
-RAG_SERVICE_URL=https://gitlab-handbook-rag-production.up.railway.app/
-```
-
-### `rag/.env`
-
-```env
-PINECONE_API_KEY=       # From your Pinecone dashboard
-PINECONE_INDEX_NAME=    # Any index name of your choice
-PINECONE_CLOUD=aws
-PINECONE_REGION=us-east-1
-GITLAB_API_TOKEN=       # Optional — prevents GitLab API rate limiting
-```
-
----
 
 ## Installation
 
@@ -102,7 +80,7 @@ GITLAB_API_TOKEN=       # Optional — prevents GitLab API rate limiting
 
 ```bash
 git clone https://github.com/Ayush-Mamgain/Gitlab-Handbook
-cd GITLAB-HANDBOOK
+cd Gitlab-Handbook
 ```
 
 ### 2. Install Node Dependencies
@@ -141,6 +119,27 @@ pip install -r requirements.txt
 cd ..
 ```
 
+### 4. Configure Environment Variables
+
+#### `Create chatbot/.env.local`
+
+```env
+MONGODB_URI=        # Non-SRV MongoDB Atlas connection string (see Troubleshooting)
+JWT_SECRET=         # Any secret string of your choice
+GEMINI_API_KEY=     # From Google AI Studio
+RAG_SERVICE_URL=https://gitlab-handbook-rag-production.up.railway.app/
+```
+
+#### `Create rag/.env`
+
+```env
+PINECONE_API_KEY=       # From your Pinecone dashboard
+PINECONE_INDEX_NAME=    # Any index name of your choice
+PINECONE_CLOUD=aws
+PINECONE_REGION=us-east-1
+GITLAB_API_TOKEN=       # Optional — prevents GitLab API rate limiting
+```
+
 ---
 
 ## Running the Project
@@ -161,14 +160,14 @@ Available at:
 
 ```
 Frontend: http://localhost:3000
-Backend:  http://localhost:8000
+RAG Service: Railway deployment (configured via RAG_SERVICE_URL)
 ```
 
 ---
 
 ### Option B — Run the Full RAG Pipeline Locally
 
-Use this if you want to build and manage your own Pinecone vector database in the cloud.
+Use this option if you want to build and manage your own Pinecone vector database.
 
 **1.** Update `chatbot/.env.local` to point to your local RAG service:
 
